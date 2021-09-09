@@ -7,15 +7,18 @@ const port = 4000;
 
 app.use((req, res, next) => {
   try {
-    username = req.headers.username;
-    password = req.headers.password;
+    const base64 = req.headers.authorization.substr("Basic ".length);
+    const auth = Buffer.from(base64, "base64").toString("utf-8");
+    const [username, password] = auth.split(":");
+    req.username=username;
+    req.password=password;
     if(password=="123456"){
       next();
     }else{
       throw "Wrong password";
     }
   } catch (error) {
-    res.status(400).send("unauthorized user");
+    res.status(400).send("Error authenticating user");
   }
 });
 
